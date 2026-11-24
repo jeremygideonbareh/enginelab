@@ -1,0 +1,28 @@
+name: Bug report
+description: Something went wrong (wrong part type, crash, bad measurement, UI problem)
+labels: [bug]
+body:
+  - type: textarea
+    id: what
+    attributes:
+      label: What happened, and what did you expect?
+    validations:
+      required: true
+  - type: input
+    id: file
+    attributes:
+      label: File type and size
+      placeholder: "e.g. STEP, 45 MB, 300 parts / SolidWorks zip / STL"
+  - type: textarea
+    id: steps
+    attributes:
+      label: Steps to reproduce
+      placeholder: "1. Open ... 2. Click ... 3. See ..."
+  - type: input
+    id: env
+    attributes:
+      label: Environment
+      placeholder: "OS, Python version, browser, EngineLab version or commit"
+  - type: markdown
+    attributes:
+      value: "Attach the CAD file only if you are allowed to share it publicly. Please don't include personal or confidential information."

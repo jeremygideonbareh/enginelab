@@ -1,0 +1,48 @@
+{
+ "eng_a/Assem1.SLDASM": {
+  "fins": "engine_block",
+  "lowercase": "engine_block",
+  "crankshaft": "crankshaft",
+  "piston": "piston",
+  "crank rod": "connecting_rod",
+  "pin": "piston_pin"
+ },
+ "eng_b": {
+  "1.Piston Head": "piston",
+  "10.Valve": "valve",
+  "13.Cam Shaft": "camshaft",
+  "2.Connecting Rod": "connecting_rod",
+  "3.Connecting Rod Cover": "connecting_rod",
+  "4.Crank Shaft": "crankshaft",
+  "5.Gear1": "timing_gear",
+  "6.Gear2": "timing_gear",
+  "7.Piston Pin": "piston_pin"
+ },
+ "eng_c/parts": {
+  "2-12": "flywheel",
+  "2-09": "timing_gear",
+  "4-02": "timing_gear",
+  "4-03": "timing_gear",
+  "spur gear_ai": "timing_gear",
+  "3-02": "connecting_rod",
+  "3-01": "piston",
+  "3-03": "piston_pin",
+  "cylinder 601": "engine_block",
+  "606 junk head": "cylinder_head",
+  "2-11": "crankshaft",
+  "hex screw_am": "bolt",
+  "hex6": "bolt",
+  "hex8": "bolt",
+  "socket head cap screw_am": "bolt",
+  "radial ball bearing_68_skf": "main_bearing",
+  "1-01 Carburetor Body": "other",
+  "1-02 Fuel Inlet": "other",
+  "1-03 Throttle Barrel": "other",
+  "1-04 Cover": "other",
+  "1-05 Throttle Lever": "other",
+  "1-06 Needle Valve": "other",
+  "1-07  Float Chamber": "other",
+  "602 exhaust manifold": "other",
+  "603 intake manifold": "other"
+ }
+}

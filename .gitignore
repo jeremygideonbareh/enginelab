@@ -1,0 +1,44 @@
+# Python
+__pycache__/
+*.py[cod]
+*.egg-info/
+.venv/
+venv/
+.pytest_cache/
+.ruff_cache/
+build/
+dist/
+
+# Trained models: published as GitHub Release assets (python tools/download_models.py)
+data/models/
+
+# Third-party CAD used for training/testing. Each project keeps its own licence (some GPL,
+# some "all rights reserved"), so none of it is committed. See data/real_cad/SOURCES.md.
+data/real_cad/*
+!data/real_cad/SOURCES.md
+!data/real_cad/test_engines/
+data/real_cad/test_engines/*
+!data/real_cad/test_engines/truth.json
+
+# Caches, user data and run-time state
+data/cache/
+data/feedback/
+data/optimizer/
+data/uploads/
+
+# Built deploy folder and local beta state
+deploy/space/
+deploy/beta_link*.txt
+
+# Local tooling / editors / OS
+.claude/
+.impeccable/
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db
+desktop.ini
+*.log
+
+# Release assets built locally (tools/make_release_assets.py)
+release/

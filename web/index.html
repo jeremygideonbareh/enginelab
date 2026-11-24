@@ -1,0 +1,257 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>EngineLab — CAD part breakdown, materials and life simulation</title>
+  <meta name="description" content="Upload a CAD assembly: EngineLab breaks it into parts, identifies and measures them, recommends materials and simulates their life.">
+  <meta name="theme-color" content="#fbf7f8">
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='-16 -16 32 32'%3E%3Cg fill='%23c2185b'%3E%3Cpath id='p' d='M0 0C-5-3-6.2-8.6-2.4-11.4L0-9.6 2.4-11.4C6.2-8.6 5-3 0 0Z'/%3E%3Cuse href='%23p' transform='rotate(72)'/%3E%3Cuse href='%23p' transform='rotate(144)'/%3E%3Cuse href='%23p' transform='rotate(216)'/%3E%3Cuse href='%23p' transform='rotate(288)'/%3E%3C/g%3E%3Ccircle r='2.6' fill='%23fff'/%3E%3C/svg%3E">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=Shippori+Mincho:wght@500;700&family=Zen+Kaku+Gothic+New:wght@400;500;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/static/styles.css?v=9">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
+  <script type="importmap">
+    { "imports": {
+        "three": "https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.module.js",
+        "three/addons/": "https://cdn.jsdelivr.net/npm/three@0.160.0/examples/jsm/"
+    } }
+  </script>
+</head>
+<body>
+  <!-- icon sprite -->
+  <svg width="0" height="0" style="position:absolute" aria-hidden="true">
+    <defs>
+      <path id="petal" d="M0 0C-5-3-6.2-8.6-2.4-11.4L0-9.6 2.4-11.4C6.2-8.6 5-3 0 0Z"/>
+      <symbol id="i-blossom" viewBox="-16 -16 32 32"><g fill="currentColor"><use href="#petal"/><use href="#petal" transform="rotate(72)"/><use href="#petal" transform="rotate(144)"/><use href="#petal" transform="rotate(216)"/><use href="#petal" transform="rotate(288)"/></g><circle r="3.4" fill="var(--blossom-core, #fff)"/><circle r="1.3" fill="currentColor"/></symbol>
+      <symbol id="i-upload" viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><path d="M17 8l-5-5-5 5"/><path d="M12 3v12"/></symbol>
+      <symbol id="i-plus" viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></symbol>
+      <symbol id="i-chevron" viewBox="0 0 24 24"><path d="m6 9 6 6 6-6"/></symbol>
+      <symbol id="i-fit" viewBox="0 0 24 24"><path d="M8 3H5a2 2 0 0 0-2 2v3M21 8V5a2 2 0 0 0-2-2h-3M3 16v3a2 2 0 0 0 2 2h3M16 21h3a2 2 0 0 0 2-2v-3"/></symbol>
+      <symbol id="i-layers" viewBox="0 0 24 24"><path d="m12 2 10 5-10 5L2 7Z"/><path d="m2 17 10 5 10-5"/><path d="m2 12 10 5 10-5"/></symbol>
+      <symbol id="i-eye" viewBox="0 0 24 24"><path d="M2 12s3-7 10-7 10 7 10 7-3 7-10 7-10-7-10-7Z"/><circle cx="12" cy="12" r="3"/></symbol>
+      <symbol id="i-focus" viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M3 7V5a2 2 0 0 1 2-2h2M17 3h2a2 2 0 0 1 2 2v2M21 17v2a2 2 0 0 1-2 2h-2M7 21H5a2 2 0 0 1-2-2v-2"/></symbol>
+      <symbol id="i-camera" viewBox="0 0 24 24"><path d="M14.5 4h-5L7 7H4a2 2 0 0 0-2 2v9a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V9a2 2 0 0 0-2-2h-3z"/><circle cx="12" cy="13" r="3"/></symbol>
+      <symbol id="i-expand" viewBox="0 0 24 24"><path d="M15 3h6v6M9 21H3v-6M21 3l-7 7M3 21l7-7"/></symbol>
+      <symbol id="i-panel" viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M15 3v18"/></symbol>
+      <symbol id="i-message" viewBox="0 0 24 24"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></symbol>
+      <symbol id="i-keyboard" viewBox="0 0 24 24"><rect x="2" y="6" width="20" height="12" rx="2"/><path d="M6 10h.01M10 10h.01M14 10h.01M18 10h.01M7 14h10"/></symbol>
+      <symbol id="i-clock" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></symbol>
+      <symbol id="i-overview" viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="9" rx="1"/><rect x="14" y="3" width="7" height="5" rx="1"/><rect x="14" y="12" width="7" height="9" rx="1"/><rect x="3" y="16" width="7" height="5" rx="1"/></symbol>
+      <symbol id="i-list" viewBox="0 0 24 24"><path d="M8 6h13M8 12h13M8 18h13M3 6h.01M3 12h.01M3 18h.01"/></symbol>
+      <symbol id="i-part" viewBox="0 0 24 24"><path d="M21 8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16Z"/><path d="m3.3 7 8.7 5 8.7-5M12 22V12"/></symbol>
+      <symbol id="i-pulse" viewBox="0 0 24 24"><path d="M22 12h-4l-3 9L9 3l-3 9H2"/></symbol>
+      <symbol id="i-sparkle" viewBox="0 0 24 24"><path d="m12 3-1.9 5.8a2 2 0 0 1-1.3 1.3L3 12l5.8 1.9a2 2 0 0 1 1.3 1.3L12 21l1.9-5.8a2 2 0 0 1 1.3-1.3L21 12l-5.8-1.9a2 2 0 0 1-1.3-1.3Z"/></symbol>
+      <symbol id="i-robot" viewBox="0 0 24 24"><rect x="4" y="9" width="16" height="11" rx="2"/><circle cx="12" cy="4.5" r="1.5"/><path d="M12 6v3M9 14h.01M15 14h.01M2 13v3M22 13v3"/></symbol>
+      <symbol id="i-engine" viewBox="0 0 24 24"><rect x="7" y="2.5" width="10" height="7" rx="1.5"/><path d="M12 9.5 9.5 15"/><circle cx="12" cy="17" r="4.5"/><circle cx="9.5" cy="15.2" r="1"/></symbol>
+      <symbol id="i-x" viewBox="0 0 24 24"><path d="M18 6 6 18M6 6l12 12"/></symbol>
+      <symbol id="i-check" viewBox="0 0 24 24"><path d="M20 6 9 17l-5-5"/></symbol>
+      <symbol id="i-alert" viewBox="0 0 24 24"><path d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3Z"/><path d="M12 9v4M12 17h.01"/></symbol>
+      <symbol id="i-info" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 16v-4M12 8h.01"/></symbol>
+      <symbol id="i-copy" viewBox="0 0 24 24"><rect x="9" y="9" width="12" height="12" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></symbol>
+      <symbol id="i-download" viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><path d="m7 10 5 5 5-5M12 15V3"/></symbol>
+      <symbol id="i-globe" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3a14 14 0 0 1 0 18M12 3a14 14 0 0 0 0 18"/></symbol>
+      <symbol id="i-search" viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></symbol>
+    </defs>
+  </svg>
+
+  <!-- boot splash -->
+  <div id="splash" class="splash" aria-hidden="true">
+    <svg class="splash-mark"><use href="#i-blossom"/></svg>
+    <div class="splash-word">EngineLab</div>
+  </div>
+
+  <header class="topbar">
+    <a class="brand" href="/" aria-label="EngineLab home">
+      <svg class="brand-mark" aria-hidden="true"><use href="#i-blossom"/></svg>
+      <span class="brand-word">Engine<span>Lab</span></span>
+    </a>
+    <div class="crumb" id="crumb" hidden>
+      <span class="crumb-sep" aria-hidden="true">/</span>
+      <span class="crumb-file" id="crumb-file"></span>
+      <span class="tag" id="crumb-mode"></span>
+    </div>
+    <div class="top-actions">
+      <button class="btn ghost" id="new-btn" popovertarget="start-pop" aria-haspopup="true">
+        <svg class="ic"><use href="#i-plus"/></svg><span class="lbl">New</span><svg class="ic chev"><use href="#i-chevron"/></svg>
+      </button>
+      <label class="btn primary" for="file-input" id="upload-btn" title="Upload a CAD file (U)">
+        <svg class="ic"><use href="#i-upload"/></svg><span class="lbl">Upload model</span>
+      </label>
+      <input id="file-input" type="file" accept=".step,.stp,.iges,.igs,.brep,.sldprt,.sldasm,.zip,.stl,.obj,.ply,.glb,.gltf,.off,.3mf" hidden>
+      <span class="divider" aria-hidden="true"></span>
+      <label class="select-ic" title="Your country: prices, shops and delivery are estimated for it">
+        <svg class="ic"><use href="#i-globe"/></svg>
+        <select id="region" aria-label="Country for prices and shops"></select>
+      </label>
+      <button class="icon-btn" id="keys-btn" title="Keyboard shortcuts (?)" aria-label="Keyboard shortcuts"><svg class="ic"><use href="#i-keyboard"/></svg></button>
+      <button class="icon-btn" id="feedback-btn" title="Send feedback" aria-label="Send feedback"><svg class="ic"><use href="#i-message"/></svg></button>
+    </div>
+  </header>
+
+  <!-- "New" menu -->
+  <div id="start-pop" popover class="popover start-pop">
+    <section>
+      <h4>Upload</h4>
+      <label class="menu-item" for="file-input"><svg class="ic"><use href="#i-upload"/></svg>
+        <span><b>From your computer</b><small>STEP, IGES, SolidWorks, ZIP, STL, OBJ, GLB, 3MF</small></span></label>
+      <label class="inline-field">Units
+        <select id="units" title="Units of the uploaded file">
+          <option value="auto">auto-detect</option><option value="mm">mm</option><option value="cm">cm</option>
+          <option value="m">m</option><option value="in">inch</option>
+        </select>
+      </label>
+    </section>
+    <section>
+      <h4>Demo engine</h4>
+      <p class="pop-note">Generated, exported as one unnamed mesh, then analysed like an upload, so you can check the answers.</p>
+      <div class="inline-row">
+        <select id="demo-layout" title="Demo engine layout" aria-label="Demo engine layout">
+          <option value="">Any layout</option><option value="inline">Inline</option><option value="V">V</option>
+        </select>
+        <input id="demo-seed" type="number" value="1" min="0" title="Seed: each number gives a different engine" aria-label="Demo seed" class="seed">
+        <button class="btn" id="demo-btn"><svg class="ic"><use href="#i-engine"/></svg>Generate</button>
+      </div>
+    </section>
+    <section>
+      <h4>Open-source CAD samples</h4>
+      <div id="sample-list" class="sample-list"></div>
+      <select id="sample-select" hidden aria-hidden="true"></select>
+      <button id="sample-btn" hidden></button>
+    </section>
+    <section id="recent-sec" hidden>
+      <h4>Recent</h4>
+      <div id="recent-list" class="sample-list"></div>
+    </section>
+  </div>
+
+  <main class="layout" id="layout">
+    <section class="viewer-wrap" id="viewer-wrap">
+      <div id="viewer"></div>
+
+      <div class="viewer-tools off" id="viewer-tools" role="toolbar" aria-label="3D view">
+        <label class="tool-select" title="Colour the parts by…">
+          <span class="sw-dot" aria-hidden="true"></span>
+          <select id="color-mode" aria-label="Colour parts by">
+            <option value="type">Part type</option>
+            <option value="cad">CAD colours</option>
+            <option value="confidence">Confidence</option>
+            <option value="material">Material</option>
+            <option value="risk">Life risk</option>
+            <option value="fea">FEA stress</option>
+          </select>
+        </label>
+        <span class="tdiv" aria-hidden="true"></span>
+        <label class="tool-range" title="Explode the assembly (E)">
+          <svg class="ic"><use href="#i-layers"/></svg>
+          <input id="explode" type="range" min="0" max="1.5" step="0.01" value="0" aria-label="Explode">
+        </label>
+        <span class="tdiv" aria-hidden="true"></span>
+        <label class="tool-toggle" title="X-ray housings (X)"><input id="xray" type="checkbox"><svg class="ic"><use href="#i-eye"/></svg><span class="sr">X-ray housings</span></label>
+        <label class="tool-toggle" title="Isolate the selection (I)"><input id="isolate" type="checkbox"><svg class="ic"><use href="#i-focus"/></svg><span class="sr">Isolate selection</span></label>
+        <button class="tool-btn" id="fit-btn" title="Fit to view (F)" aria-label="Fit to view"><svg class="ic"><use href="#i-fit"/></svg></button>
+        <button class="tool-btn" id="shot-btn" title="Save a picture of the view (S)" aria-label="Save picture"><svg class="ic"><use href="#i-camera"/></svg></button>
+        <button class="tool-btn" id="full-btn" title="Full screen (Shift+F)" aria-label="Full screen"><svg class="ic"><use href="#i-expand"/></svg></button>
+        <button class="tool-btn" id="panel-btn" title="Show / hide the side panel (P)" aria-label="Toggle side panel"><svg class="ic"><use href="#i-panel"/></svg></button>
+      </div>
+
+      <div id="legend" class="legend"></div>
+      <div id="selinfo" class="selinfo hidden"></div>
+
+      <div id="empty" class="welcome">
+        <canvas id="petals" class="petals" aria-hidden="true"></canvas>
+        <div class="welcome-inner">
+          <svg class="welcome-mark" aria-hidden="true"><use href="#i-blossom"/></svg>
+          <h1>Drop a CAD assembly here</h1>
+          <p class="lede">EngineLab splits it into parts, identifies and measures each one, recommends materials and simulates how long it will last.</p>
+          <div class="start-grid">
+            <label class="start-card primary" for="file-input">
+              <svg class="ic"><use href="#i-upload"/></svg>
+              <b>Upload a model</b>
+              <small>STEP · IGES · SolidWorks · ZIP · STL · OBJ · GLB · 3MF</small>
+            </label>
+            <button class="start-card" id="w-demo">
+              <svg class="ic"><use href="#i-engine"/></svg>
+              <b>Try a demo engine</b>
+              <small>A generated engine with known answers</small>
+            </button>
+            <button class="start-card" id="w-sample">
+              <svg class="ic"><use href="#i-robot"/></svg>
+              <b>Open a robot arm</b>
+              <small id="w-sample-sub">A real open-source assembly</small>
+            </button>
+          </div>
+          <div id="w-recent" class="w-recent" hidden></div>
+          <p class="hint">Tip: press <kbd>?</kbd> for keyboard shortcuts.</p>
+        </div>
+      </div>
+      <div id="dropzone" class="dropzone" hidden><div><svg class="ic"><use href="#i-upload"/></svg>Drop to analyse</div></div>
+
+      <div id="busy" class="busy hidden" role="status" aria-live="polite">
+        <div class="busy-card">
+          <svg class="busy-mark" aria-hidden="true"><use href="#i-blossom"/></svg>
+          <div class="busy-title" id="busy-title">Working…</div>
+          <ol class="stages" id="stages"></ol>
+          <div class="progress"><span></span></div>
+          <div class="busy-sub"><span id="busy-text"></span><span id="busy-time"></span></div>
+        </div>
+      </div>
+    </section>
+
+    <div class="resizer" id="resizer" role="separator" aria-orientation="vertical" aria-label="Resize the side panel" tabindex="0"></div>
+
+    <aside class="panel" id="panel">
+      <nav class="tabs" role="tablist">
+        <button data-tab="overview" class="active" role="tab"><svg class="ic"><use href="#i-overview"/></svg><span>Overview</span></button>
+        <button data-tab="parts" role="tab"><svg class="ic"><use href="#i-list"/></svg><span>Parts</span></button>
+        <button data-tab="part" role="tab"><svg class="ic"><use href="#i-part"/></svg><span>Part</span></button>
+        <button data-tab="sim" role="tab"><svg class="ic"><use href="#i-pulse"/></svg><span>Life</span></button>
+        <button data-tab="opt" role="tab"><svg class="ic"><use href="#i-sparkle"/></svg><span>Optimise</span></button>
+        <span class="tab-ink" id="tab-ink" aria-hidden="true"></span>
+      </nav>
+      <div class="tab-body" id="tab-overview">
+        <div class="empty-state"><svg class="es-mark"><use href="#i-blossom"/></svg><p>Upload a model, generate a demo engine or open a sample to begin.</p></div>
+      </div>
+      <div class="tab-body hidden" id="tab-parts"><div class="empty-state"><svg class="es-mark"><use href="#i-list"/></svg><p>The parts list appears here once a model is loaded.</p></div></div>
+      <div class="tab-body hidden" id="tab-part"><div class="empty-state"><svg class="es-mark"><use href="#i-part"/></svg><p>Click a part in the 3D view or the parts list to inspect, test and improve it.</p></div></div>
+      <div class="tab-body hidden" id="tab-sim"><div class="empty-state"><svg class="es-mark"><use href="#i-pulse"/></svg><p>Life simulation runs on engines. Load one to start.</p></div></div>
+      <div class="tab-body hidden" id="tab-opt"><div class="empty-state"><svg class="es-mark"><use href="#i-sparkle"/></svg><p>The AI optimiser searches for better engine designs. Load an engine to start.</p></div></div>
+    </aside>
+  </main>
+
+  <div id="toasts" class="toasts" aria-live="polite"></div>
+  <div id="toast" hidden></div>
+
+  <dialog id="feedback-dlg" class="dlg">
+    <form method="dialog">
+      <header><h3>Send feedback</h3><button class="icon-btn" value="cancel" aria-label="Close"><svg class="ic"><use href="#i-x"/></svg></button></header>
+      <p class="note">What went wrong, or what would help? Please don't include personal or confidential details.</p>
+      <textarea id="feedback-text" rows="6" maxlength="2000" placeholder="e.g. the gear in the gearbox was shown as a bearing"></textarea>
+      <div class="dlg-actions"><button class="btn" value="cancel">Cancel</button><button class="btn primary" value="send" id="feedback-send">Send</button></div>
+    </form>
+  </dialog>
+
+  <dialog id="keys-dlg" class="dlg">
+    <form method="dialog">
+      <header><h3>Keyboard shortcuts</h3><button class="icon-btn" value="cancel" aria-label="Close"><svg class="ic"><use href="#i-x"/></svg></button></header>
+      <dl class="keys">
+        <dt><kbd>U</kbd></dt><dd>Upload a model</dd>
+        <dt><kbd>N</kbd></dt><dd>New: demo engine, samples, recent</dd>
+        <dt><kbd>F</kbd></dt><dd>Fit the view</dd>
+        <dt><kbd>E</kbd></dt><dd>Explode / collapse</dd>
+        <dt><kbd>X</kbd></dt><dd>X-ray housings</dd>
+        <dt><kbd>I</kbd></dt><dd>Isolate the selection</dd>
+        <dt><kbd>C</kbd></dt><dd>Next colour mode</dd>
+        <dt><kbd>S</kbd></dt><dd>Save a picture of the view</dd>
+        <dt><kbd>P</kbd></dt><dd>Show / hide the side panel</dd>
+        <dt><kbd>Shift</kbd> <kbd>F</kbd></dt><dd>Full screen</dd>
+        <dt><kbd>1</kbd>–<kbd>5</kbd></dt><dd>Switch tab</dd>
+        <dt><kbd>/</kbd></dt><dd>Search parts</dd>
+        <dt><kbd>Esc</kbd></dt><dd>Clear the selection</dd>
+      </dl>
+    </form>
+  </dialog>
+  <script type="module" src="/static/app.js?v=9"></script>
+</body>
+</html>

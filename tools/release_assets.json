@@ -1,0 +1,26 @@
+{
+ "tag": "v0.1.0",
+ "base_url": "https://github.com/jeremygideonbareh/enginelab/releases/download/v0.1.0",
+ "models": [
+  {
+   "name": "part_classifier.joblib",
+   "size": 722727,
+   "sha256": "cc762c9a838cc4fc79278f25a8dbc6f99c435b6ba095e9154128fc67210c1838"
+  },
+  {
+   "name": "component_classifier.joblib",
+   "size": 43995285,
+   "sha256": "0f905beeb552c22562996a3b4b9f51e1cc097d69ec362639d7a8f8002991600f"
+  },
+  {
+   "name": "component_classifier_alone.joblib",
+   "size": 51476527,
+   "sha256": "535d07d0f663d985d9c149851c83fa5151fdc6b4e250aec9e039b0e562789368"
+  }
+ ],
+ "samples": {
+  "name": "enginelab-samples-v0.1.0.zip",
+  "size": 10895058,
+  "sha256": "892c63d7d78f4f5c0d16cb5946e9ee3383418b245b212901db177245730b4276"
+ }
+}

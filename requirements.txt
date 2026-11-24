@@ -1,0 +1,23 @@
+# Runtime (exact versions known to work: deploy/requirements.txt)
+numpy>=2.0
+scipy>=1.13
+scikit-learn==1.8.0      # the released models are pickled with this version
+joblib>=1.3
+trimesh>=4.0
+manifold3d>=3.0
+rtree>=1.2
+shapely>=2.0
+networkx>=3.0
+lxml>=5.0
+gmsh>=4.12
+cadquery-ocp>=7.7        # OpenCASCADE: exact STEP / IGES assemblies
+pyamg>=5.0
+fastapi>=0.110
+uvicorn>=0.29
+python-multipart>=0.0.9
+pillow>=10.0
+olefile>=0.47            # SolidWorks files from before 2015
+
+# Development
+pytest>=8.0
+matplotlib>=3.8
