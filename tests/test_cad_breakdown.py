@@ -165,7 +165,8 @@ def test_life_simulation_scatter_is_small():
 TEST_ENGINES = os.path.join(os.path.dirname(__file__), "..", "data", "real_cad", "test_engines")
 
 
-@pytest.mark.skipif(not os.path.isdir(TEST_ENGINES), reason="real test engines not downloaded")
+@pytest.mark.skipif(not os.path.exists(os.path.join(TEST_ENGINES, "eng_a", "Assem1.SLDASM")),
+                    reason="real test engines not present (not redistributable)")
 def test_real_engines_read_and_identified():
     """Older SolidWorks files read (false section markers skipped); real engines identified."""
     import subprocess
