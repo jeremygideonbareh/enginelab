@@ -42,3 +42,6 @@ desktop.ini
 
 # Release assets built locally (tools/make_release_assets.py)
 release/
+
+# Local experiments (not published)
+experimental/
